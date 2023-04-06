@@ -7,11 +7,17 @@ from scipy.stats import norm
 chat_id = 123456 # Ваш chat ID, не меняйте название переменной
 
 def solution(p: float, x: np.array) -> tuple:
-    # Измените код этой функции
+    n = len(x)
+    mean_x = np.mean(x) 
+    std_x = np.std(x, ddof=1) 
+    vt = np.vectorize(lambda t: mean_x + t * std_x / np.sqrt(n))
+    v = np.vectorize(lambda x: x / 14)
+    velocities = v(x)
+    mean_v = np.mean(velocities)
+    std_v = np.std(velocities, ddof=1)
+    t_value = t.ppf(1 - p / 2, n - 1)
+    left_bound = vt(mean_v - t_value)
+    right_bound = vt(mean_v + t_value)# Измените код этой функции
     # Это будет вашим решением
     # Не меняйте название функции и её аргументы
-    alpha = 1 - p
-    loc = x.mean()
-    scale = np.sqrt(np.var(x)) / np.sqrt(len(x))
-    return loc - scale * norm.ppf(1 - alpha / 2), \
-           loc - scale * norm.ppf(alpha / 2)
+    return left_bound, right_bound
