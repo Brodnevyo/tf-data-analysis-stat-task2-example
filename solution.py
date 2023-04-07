@@ -8,16 +8,12 @@ chat_id = 1025787461 # Ваш chat ID, не меняйте название пе
 
 def solution(p: float, x: np.array) -> tuple:
     n = len(x)
-    num_bootstraps = 10000
-    acceleration_bootstraps = []
-    for i in range(num_bootstraps):
-        x_bootstrap = np.random.choice(x, size=n, replace=True)
-        x_mean_bootstrap = np.mean(x_bootstrap)
-        acceleration_bootstrap = 2 * x_mean_bootstrap / (14 ** 2)
-        acceleration_bootstraps.append(acceleration_bootstrap)
-    acceleration_bootstraps.sort()
-    lower_bound_index = int((1 - p) / 2 * num_bootstraps)
-    upper_bound_index = int((1 + p) / 2 * num_bootstraps)
-    lower_bound = acceleration_bootstraps[lower_bound_index]
-    upper_bound = acceleration_bootstraps[upper_bound_index]
-    return (lower_bound, upper_bound)
+    x_mean = np.median(x)
+    s = np.std(x, ddof=1)
+    t_value = t.ppf((1 + p) / 2, n - 1)
+    margin_of_error = t_value * s / np.sqrt(n)
+    lower_bound = x_mean - margin_of_error
+    upper_bound = x_mean + margin_of_error
+    acceleration_lower_bound = 2 * lower_bound / (14 ** 2)
+    acceleration_upper_bound = 2 * upper_bound / (14 ** 2)
+    return (acceleration_lower_bound, acceleration_upper_bound)
